@@ -23,13 +23,10 @@ if (navigator.geolocation) {
       const coords = [latitude, longitude];
       //Leaflet map
       const map = L.map('map').setView(coords, 13);
-      L.tileLayer(
-        'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png',
-        {
-          attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        }
-      ).addTo(map);
+      L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(map);
 
       L.marker(coords)
         .addTo(map)
