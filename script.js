@@ -11,8 +11,10 @@ const inputDuration = document.querySelector('.form__input--duration');
 const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
 
+//Global vars
+let map, mapEvent;
 //Geolocation Api
-if (navigator.geolocation) {
+if (navigator.geolocation)
   navigator.geolocation.getCurrentPosition(
     function (position) {
       const { latitude } = position.coords;
@@ -22,7 +24,7 @@ if (navigator.geolocation) {
 
       const coords = [latitude, longitude];
       //Leaflet map
-      const map = L.map('map').setView(coords, 13);
+      map = L.map('map').setView(coords, 13);
       L.tileLayer(
         'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png',
         {
@@ -31,22 +33,14 @@ if (navigator.geolocation) {
         }
       ).addTo(map);
 
-      map.on('click', function (mapEvent) {
-        console.log(mapEvent);
-        const { lat, lng } = mapEvent.latlng;
-        L.marker([lat, lng])
-          .addTo(map)
-          .bindPopup(
-            L.popup({
-              maxwidth: 250,
-              minwidth: 100,
-              autoClose: false,
-              closeOnClick: false,
-              className: 'running-popup',
-            })
-          )
-          .setPopupContent('Workout')
-          .openPopup();
+      //Handling clicks on the map
+      map.on('click', function (mapE) {
+        mapEvent = mapE;
+        //Remove the hide form class
+        form.classList.remove('hidden');
+
+        inputDistance.focus();
+        // console.log(mapEvent);
       });
     },
     function () {
@@ -55,4 +49,33 @@ if (navigator.geolocation) {
 
     { enableHighAccuracy: true, maximumAge: 2000, timeout: 5000 }
   );
-}
+form.addEventListener('submit', function (e) {
+  e.preventDefault();
+
+  //Clear inputs
+  inputDistance.value =
+    inputDuration.value =
+    inputElevation.value =
+    inputCadence.value =
+      '';
+  //display marker
+  const { lat, lng } = mapEvent.latlng;
+  L.marker([lat, lng])
+    .addTo(map)
+    .bindPopup(
+      L.popup({
+        maxwidth: 250,
+        minwidth: 100,
+        autoClose: false,
+        closeOnClick: false,
+        className: 'running-popup',
+      })
+    )
+    .setPopupContent('Workout')
+    .openPopup();
+});
+
+inputType.addEventListener('change', function () {
+  inputElevation.closest('.form__row').classList.toggle('form__row--hidden');
+  inputCadence.closest('.form__row').classList.toggle('form__row--hidden');
+});
