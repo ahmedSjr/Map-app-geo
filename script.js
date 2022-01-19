@@ -11,6 +11,49 @@ const inputDuration = document.querySelector('.form__input--duration');
 const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
 
+class Workout {
+  date = new Date();
+  id = (Date.now() + '').slice(-10);
+
+  constructor(coords, distance, duration) {
+    this.coords = coords; // Array
+    this.distance = distance; //in km
+    this.duration = duration; // in min
+  }
+}
+
+class Running extends Workout {
+  constructor(coords, distance, duration, cadence) {
+    super(coords, distance, duration);
+    this.cadence = cadence;
+    this.calcPace();
+  }
+
+  calcPace() {
+    //min per km
+    this.pace = this.duration / this.distance;
+    return this.pace;
+  }
+}
+
+class Cycling extends Workout {
+  constructor(coords, distance, duration, elevation) {
+    super(coords, distance, duration);
+    this.elevation = elevation;
+    this.calcSpeed();
+  }
+  calcSpeed() {
+    this.speed = this.distance / (this.duration / 60);
+    return this.speed;
+  }
+}
+
+const run1 = new Running([33, 15], 5.2, 24, 170);
+const cycl1 = new Cycling([33, 15], 5.2, 30, 564);
+console.log(run1, cycl1);
+
+////////////////////////////////////////////////////////////
+// Application Arch
 class App {
   #map;
   #mapEvent;
@@ -22,6 +65,7 @@ class App {
     inputType.addEventListener('change', this._toggleElevation.bind(this));
   }
   _getPosition() {
+    //Geolocation Api
     if (navigator.geolocation)
       navigator.geolocation.getCurrentPosition(
         this._loadMap.bind(this),
@@ -95,5 +139,3 @@ class App {
   }
 }
 const app = new App();
-
-//Geolocation Api
