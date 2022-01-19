@@ -13,42 +13,60 @@ const inputElevation = document.querySelector('.form__input--elevation');
 
 //Global vars
 let map, mapEvent;
+
+class App {
+  #map;
+  #mapEvent;
+  constructor() {
+    this._getPosition();
+  }
+  _getPosition() {
+    if (navigator.geolocation)
+      navigator.geolocation.getCurrentPosition(
+        this._loadMap.bind(this),
+        function () {
+          alert("Something wrong we can't get your position");
+        },
+
+        { enableHighAccuracy: true, maximumAge: 2000, timeout: 5000 }
+      );
+  }
+
+  _loadMap(position) {
+    const { latitude } = position.coords;
+    const { longitude } = position.coords;
+    console.log(latitude, longitude);
+    console.log(`https://www.google.com/maps/@${latitude},${longitude}`);
+
+    const coords = [latitude, longitude];
+    //Leaflet map
+    this.#map = L.map('map').setView(coords, 13);
+    L.tileLayer(
+      'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png',
+      {
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }
+    ).addTo(this.#map);
+
+    //Handling clicks on the map
+    this.#map.on('click', function (mapE) {
+      this.#mapEvent = mapE;
+      //Remove the hide form class
+      form.classList.remove('hidden');
+
+      inputDistance.focus();
+      // console.log(mapEvent);
+    });
+  }
+  _showForm() {}
+  _toggleElevation() {}
+  _newWorkout() {}
+}
+const app = new App();
+
 //Geolocation Api
-if (navigator.geolocation)
-  navigator.geolocation.getCurrentPosition(
-    function (position) {
-      const { latitude } = position.coords;
-      const { longitude } = position.coords;
-      console.log(latitude, longitude);
-      console.log(`https://www.google.com/maps/@${latitude},${longitude}`);
 
-      const coords = [latitude, longitude];
-      //Leaflet map
-      map = L.map('map').setView(coords, 13);
-      L.tileLayer(
-        'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png',
-        {
-          attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        }
-      ).addTo(map);
-
-      //Handling clicks on the map
-      map.on('click', function (mapE) {
-        mapEvent = mapE;
-        //Remove the hide form class
-        form.classList.remove('hidden');
-
-        inputDistance.focus();
-        // console.log(mapEvent);
-      });
-    },
-    function () {
-      alert("Something wrong we can't get your position");
-    },
-
-    { enableHighAccuracy: true, maximumAge: 2000, timeout: 5000 }
-  );
 form.addEventListener('submit', function (e) {
   e.preventDefault();
 
