@@ -192,7 +192,7 @@ class App {
   }
 
   _renderWorkout(workout) {
-    const html = `<li class="workout workout--${workout.type}" data-id="${
+    let html = `<li class="workout workout--${workout.type}" data-id="${
       workout.id
     }">
     <h2 class="workout__title">${workout.description}</h2>
