@@ -7,6 +7,7 @@ const inputDistance = document.querySelector('.form__input--distance');
 const inputDuration = document.querySelector('.form__input--duration');
 const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
+const deleteBtn = document.querySelector('.btn');
 
 class Workout {
   date = new Date();
@@ -84,7 +85,7 @@ class App {
 
     //Event handlers function
     form.addEventListener('submit', this._newWorkout.bind(this));
-
+    deleteBtn.addEventListener('click', this._reset.bind(this));
     inputType.addEventListener('change', this._toggleElevation.bind(this));
     containerWorkouts.addEventListener('click', this._moveToMark.bind(this));
   }
@@ -196,6 +197,8 @@ class App {
 
     //Save data in local storage
     this._setLocalStorage();
+
+    //Delete the data from the local storage
   }
   _renderMarker(workout) {
     L.marker(workout.coords)
@@ -292,6 +295,10 @@ class App {
 
     this.#workouts = data;
     this.#workouts.forEach(work => this._renderWorkout(work));
+  }
+  _reset() {
+    localStorage.removeItem('workouts');
+    location.reload();
   }
 }
 const app = new App();
