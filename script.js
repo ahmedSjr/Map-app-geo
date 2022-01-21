@@ -11,6 +11,7 @@ const inputElevation = document.querySelector('.form__input--elevation');
 class Workout {
   date = new Date();
   id = (Date.now() + '').slice(-10);
+  clicks = 0;
 
   constructor(coords, distance, duration) {
     this.coords = coords; // Array
@@ -25,6 +26,9 @@ class Workout {
     this.description = `${this.type[0].toUpperCase()}${this.type.slice(1)} on ${
       months[this.date.getMonth()]
     } ${this.date.getDate()}`;
+  }
+  click() {
+    this.clicks++;
   }
 }
 
@@ -68,6 +72,7 @@ class Cycling extends Workout {
 // Application Arch
 class App {
   #map;
+  #mapZoom = 13;
   #mapEvent;
   #workouts = [];
   constructor() {
@@ -76,6 +81,7 @@ class App {
     form.addEventListener('submit', this._newWorkout.bind(this));
 
     inputType.addEventListener('change', this._toggleElevation.bind(this));
+    containerWorkouts.addEventListener('click', this._moveToMark.bind(this));
   }
   _getPosition() {
     //Geolocation Api
@@ -98,7 +104,7 @@ class App {
 
     const coords = [latitude, longitude];
     //Leaflet map
-    this.#map = L.map('map').setView(coords, 13);
+    this.#map = L.map('map').setView(coords, this.#mapZoom);
     L.tileLayer(
       'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png',
       {
@@ -230,7 +236,7 @@ class App {
         <span class="workout__value">${workout.cadence}</span>
         <span class="workout__unit">spm</span>
           </div>
-    </li> -->`;
+    </li>`;
 
     //for cycling
 
@@ -245,9 +251,30 @@ class App {
       <span class="workout__value">${workout.elevation}</span>
       <span class="workout__unit">m</span>
   </div>
-  </li> -->`;
+  </li> `;
 
     form.insertAdjacentHTML('afterend', html);
+  }
+
+  _moveToMark(e) {
+    const workoutEl = e.target.closest('.workout');
+    console.log(workoutEl);
+
+    if (!workoutEl) return;
+    const workout = this.#workouts.find(
+      work => work.id === workoutEl.dataset.id
+    );
+
+    console.log(workout);
+
+    this.#map.setView(workout.coords, this.#mapZoom, {
+      animate: true,
+      pan: {
+        duration: 1,
+      },
+    });
+
+    workout.click();
   }
 }
 const app = new App();
