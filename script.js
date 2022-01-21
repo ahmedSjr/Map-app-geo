@@ -95,7 +95,7 @@ class App {
       navigator.geolocation.getCurrentPosition(
         this._loadMap.bind(this),
         function () {
-          alert("Something wrong we can't get your position");
+          swal('Error Message', "We can't obtain your position");
         },
 
         { enableHighAccuracy: true, maximumAge: 2000, timeout: 5000 }
@@ -170,7 +170,10 @@ class App {
         !validInput(distance, duration, cadence) ||
         !posNumber(distance, duration, cadence)
       )
-        return alert('Input must be a positive number');
+        return swal({
+          text: 'The inputs must be positive!',
+          icon: 'error',
+        });
 
       workout = new Running([lat, lng], distance, duration, cadence);
     }
@@ -181,7 +184,11 @@ class App {
         !validInput(distance, duration, elevation) ||
         !posNumber(distance, duration)
       )
-        return alert('Input must be a positive number');
+        return;
+      swal({
+        text: 'The inputs must be positive!',
+        icon: 'error',
+      });
       workout = new Cycling([lat, lng], distance, duration, elevation);
     }
     this.#workouts.push(workout);
